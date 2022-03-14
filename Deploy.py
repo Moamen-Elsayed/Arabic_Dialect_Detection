@@ -62,7 +62,7 @@ def classify_dialect(tweet: Tweet):
     tweet = tweet["tweet"]
     cleaned_tweet = text_normalization(tweet)
     cleaned_tweet = remove_stopWords(cleaned_tweet)
-    pred = loaded_clf.predict(loaded_count_vectorizer.transform([cleaned_tweet]))
+    pred = loaded_clf.predict(loaded_count_vectorizer.transform([cleaned_tweet]))[0]
 
     return {
         'اللهحة هي': pred
