@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
+from keras.models import load_model
 import numpy as np
 import pickle
 import pandas as pd
@@ -50,6 +51,8 @@ app = FastAPI()
 with open(r'Models/MultinomialNB.pkl', 'rb') as f:
     loaded_count_vectorizer, loaded_clf = pickle.load(f)
 
+model =load_model("models/DL_model.h5")
+
 
 
 @app.get('/')
@@ -62,8 +65,14 @@ def classify_dialect(tweet: Tweet):
     tweet = tweet["tweet"]
     cleaned_tweet = text_normalization(tweet)
     cleaned_tweet = remove_stopWords(cleaned_tweet)
-    pred = loaded_clf.predict(loaded_count_vectorizer.transform([cleaned_tweet]))[0]
+    pred_ML = loaded_clf.predict(loaded_count_vectorizer.transform([cleaned_tweet]))[0]
+
+    pred_DL = model.predict(cleaned_tweet)
+    labels = ['AE', 'BH', 'DZ', 'EG', 'IQ', 'JO', 'KW', 'LB', 'LY', 'MA', 'OM','PL' ,'QA', 'SA', 'SD', 'SY', 'TN', 'YE']
+    pred_DL = str(labels[np.argmax(pred_DL)])
+
 
     return {
-        'اللهحة هي': pred
+        'ML: ': pred_ML,
+        'DL: ': pred_DL
     }
